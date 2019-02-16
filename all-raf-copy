@@ -1,0 +1,51 @@
+# caching problem solve
+
+# vi /opt/chefdk/embedded/lib/ruby/gems/2.4.0/gems/chef-dk-2.4.17/lib/chef-dk/cookbook_omnifetch.rb
+   c.cache_path = File.expand_path(File.join(Dir.pwd, "cache"))
+   c.storage_path = Pathname.new(File.expand_path(File.join(Dir.pwd, "cache", "cookbooks")))
+
+
+
+find / -name *e.pem -print | while read abc
+do
+   echo $abc
+   echo '#############'
+#   curl -u${CREDENTIALS} -k -T $abc $BUILDURL/$abc
+done
+
+
+find / -name *e.pem -print | while read abc
+do
+   echo $abc
+   echo '#############'
+#   curl -u${CREDENTIALS} -k -T $abc $BUILDURL/$abc
+done
+
+
+
+# self-signed "bootstrap" temporary standalone method
+openssl req -new -x509 -nodes -out /etc/test/certs/itzgeekldap.crt -keyout /etc/test/certs/itzgeekldap.key -days 1460
+
+# signed by CA, pseudo proper certificate heirarchy
+
+openssl genrsa -out itzgeekrootCA.key 2048
+openssl req -x509 -new -nodes -key itzgeekrootCA.key -sha256 -days 1024 -out itzgeekrootCA.crt
+
+# now we have a working CA (key and cert)
+
+cd /etc/test/certs/
+
+# local on your machine we generate a key and issue a CSR
+openssl genrsa -out itzgeekldap.key 2048
+openssl req -new -key itzgeekldap.key -out itzgeekldap.csr
+
+# now send the csr to the CA
+
+# at a CA 
+openssl x509 -req -in itzgeekldap.csr -CA itzgeekrootCA.crt -CAkey itzgeekrootCA.key -CAcreateserial -out itzgeekldap.crt -days 1460 -sha256
+
+# now we return the generated, signed certificate to the requestor
+# this certificate (itzgeekldap.crt) matches the key (itzgeeldap.key)
+# and can now be used for SSL/TLS operations
+
+ 

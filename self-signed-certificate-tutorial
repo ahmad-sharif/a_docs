@@ -1,0 +1,34 @@
+# self-signed "bootstrap" temporary standalone method
+openssl req -new -x509 -nodes -out itzgeekldap.crt -keyout itzgeekldap.key -days 1460
+
+--------------------
+# signed by CA, pseudo proper certificate heirarchy
+
+openssl genrsa -out itzgeekrootCA.key 2048
+openssl req -x509 -new -nodes -key itzgeekrootCA.key -sha256 -days 1024 -out itzgeekrootCA.crt
+
+# now we have a working CA (key and cert)
+
+# local on your machine we generate a key and issue a CSR
+openssl genrsa -out itzgeekldap.key 2048
+openssl req -new -key itzgeekldap.key -out itzgeekldap.csr
+
+# now send the csr to the CA
+
+# at a CA 
+openssl x509 -req -in itzgeekldap.csr -CA itzgeekrootCA.crt -CAkey itzgeekrootCA.key -CAcreateserial -out itzgeekldap.crt -days 1460 -sha256
+
+# now we return the generated, signed certificate to the requestor
+# this certificate (itzgeekldap.crt) matches the key (itzgeeldap.key)
+# and can now be used for SSL/TLS operations
+
+---------------------
+# Reading information of certificate 
+openssl x509 -text -noout -in  itzgeekldap.crt
+
+#Read the SSL Certificate information from a remote server:
+openssl s_client -connect access.gateway.intranet.com.au:443
+openssl s_client -showcerts -connect ma.ttias.be:443
+
+# Reading certificate sign request 
+openssl req -noout -text -in itzgeekldap.csr
