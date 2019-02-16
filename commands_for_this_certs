@@ -1,0 +1,7 @@
+ openssl genrsa -out rootCA.key 2048
+ openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 1024 -out rootCA.crt
+ cd ../ssl-cert-authority
+ openssl genrsa -out ssl-cert-authority.key 2048
+ openssl req -new -key ssl-cert-authority.key -out ssl-cert-authority-request.csr
+ openssl x509 -req -in ssl-cert-authority-request.csr -CA ../root-ca/rootCA.crt -CAkey ../root-ca/rootCA.key -CAcreateserial -out ssl-cert-authority-cert.crt -days 1460 -sha256
+ openssl x509 -text -noout -in ssl-cert-authority-cert.crt
